@@ -1,30 +1,29 @@
-// Sample dynamic data (replace with API in future)
+const gallery = document.getElementById('gallery');
+const searchInput = document.getElementById('search');
 let data = [];
-for(let i=1;i<=50;i++){
-data.push({
-title:'Image '+i,
-img:'https://picsum.photos/300/300?random='+i
-});
+
+// Fetch images from backend
+async function fetchImages(){
+  const res = await fetch('http://localhost:5000/api/images');
+  data = await res.json();
+  renderItems(data);
 }
 
-let gallery = document.getElementById('gallery');
-
-// Function to render items
-function loadItems(items){
-gallery.innerHTML = '';
-items.forEach(item => {
-let div = document.createElement('div');
-div.className = 'item';
-div.innerHTML = "<img src="${item.img}" alt="${item.title}"><h3>${item.title}</h3>";
-gallery.appendChild(div);
-});
+function renderItems(items){
+  gallery.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `<img src="${item.img}" alt="${item.title}"><h3>${item.title}</h3>`;
+    gallery.appendChild(div);
+  });
 }
 
 // Initial load
-loadItems(data);
+fetchImages();
 
 // Search filter
-document.getElementById('search').addEventListener('input', function(){
-let filtered = data.filter(d => d.title.toLowerCase().includes(this.value.toLowerCase()));
-loadItems(filtered);
+searchInput.addEventListener('input', function(){
+  const filtered = data.filter(d => d.title.toLowerCase().includes(this.value.toLowerCase()));
+  renderItems(filtered);
 });
